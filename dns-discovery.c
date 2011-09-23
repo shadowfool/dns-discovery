@@ -3,11 +3,12 @@ DNS Discovery
   A multi-threaded dns sub-domain brute-forcer
 
 googlecode : http://code.google.com/p/dns-discovery/
+
+
 author	   : m0nad
 aka 	   : Victor Ramos Mello
 email	   : m0nad /at/ email.com
 github	   : https://github.com/m0nad/
-blog	   : http://m0nadcoder.wordpress.com/
 copyfree   : beer license, if you like this, buy me a beer
 	
 $ gcc -o dns-discovery dns-discovery.c -Wall -Wextra -lpthread -O3
@@ -45,11 +46,12 @@ IPv6 address: 2001:4860:b009::68
 #include <pthread.h>
 #include <string.h>
 
-#define TAM 256
+#define LEN 256
 #define MAX 512
-#define SAY(args...) \
+#define DEFAULT_WL "wordlist.wl"
+#define SAY(args...)\
   printf (args);\
-  if (dd_args.report) \
+  if (dd_args.report)\
     fprintf (dd_args.report, args);
 
 struct dns_discovery_args {
@@ -100,25 +102,25 @@ chomp (char * str)
 void
 banner ()
 {
-  SAY (
-"   ___  _  ______    ___  _                              \n"
-"  / _ \\/ |/ / __/___/ _ \\(_)__ _______ _  _____ ______ __\n"
-" / // /    /\\ \\/___/ // / (_-</ __/ _ \\ |/ / -_) __/ // /\n"
-"/____/_/|_/___/   /____/_/___/\\__/\\___/___/\\__/_/  \\_, / \n"
-"                                                  /___/  \n"
-"\t  by m0nad /at/ email.com\n\n");
+  SAY ("   ___  _  ______    ___  _                              \n"
+       "  / _ \\/ |/ / __/___/ _ \\(_)__ _______ _  _____ ______ __\n"
+       " / // /    /\\ \\/___/ // / (_-</ __/ _ \\ |/ / -_) __/ // /\n"
+       "/____/_/|_/___/   /____/_/___/\\__/\\___/___/\\__/_/  \\_, / \n"
+       "                                                  /___/  \n"
+       "\t  by m0nad /at/ email.com\n\n");
 }
 
 int
 usage ()
 {
-  SAY ("usage: ./dns-discovery domain [options]\n");
-  SAY ("options:\n");
-  SAY ("\t-w wordlist file (default : wordlist.wl)\n");
-  SAY ("\t-t threads (default : 1)\n");
-  SAY ("\t-r report file\n");
-  exit (1);
+  SAY ("usage: ./dns-discovery domain [options]\n"
+       "options:\n"
+       "\t-w wordlist file (default : %s)\n"
+       "\t-t threads (default : 1)\n"
+       "\t-r report file\n", DEFAULT_WL);
+  exit (0);
 }
+
 FILE *
 parse_args (int argc, char ** argv)
 {
@@ -155,8 +157,8 @@ parse_args (int argc, char ** argv)
         usage ();
     }
   if (!wordlist) {
-    wordlist = ck_fopen ("wordlist.wl", "r"); 
-    SAY ("WORDLIST: wordlist.wl\n");
+    wordlist = ck_fopen (DEFAULT_WL, "r"); 
+    SAY ("WORDLIST: %s\n", DEFAULT_WL);
   }
   SAY("\n");
   return wordlist;
@@ -166,7 +168,7 @@ void
 resolve_lookup (const char * hostname)
 {
   int ipv = 0;
-  char addr_str [TAM];
+  char addr_str [LEN];
   void * addr_ptr = NULL;
   struct addrinfo * res, * ori_res, hints;
 
@@ -189,7 +191,7 @@ resolve_lookup (const char * hostname)
           addr_ptr = &((struct sockaddr_in6 *) res->ai_addr)->sin6_addr;
           break;
       }
-      inet_ntop (res->ai_family, addr_ptr, addr_str, TAM);
+      inet_ntop (res->ai_family, addr_ptr, addr_str, LEN);
       SAY ("IPv%d address: %s\n", ipv, addr_str);
     }
     SAY("\n");
@@ -201,7 +203,7 @@ resolve_lookup (const char * hostname)
 void 
 dns_discovery (FILE * file, const char * domain)
 {
-  char line [TAM];
+  char line [LEN];
   char hostname [MAX];
 
   while (fgets (line, sizeof line, file) != NULL) {

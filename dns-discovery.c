@@ -2,11 +2,10 @@
 DNS Discovery
   A multi-threaded dns sub-domain brute-forcer
 
-googlecode : http://code.google.com/p/dns-discovery/
+googlecode : http://dns-discovery.googlecode.com
 
 
-author	   : m0nad
-aka 	   : Victor Ramos Mello
+author	   : Victor Ramos Mello aka m0nad
 email	   : m0nad /at/ email.com
 github	   : https://github.com/m0nad/
 copyfree   : beer license, if you like this, buy me a beer
@@ -74,7 +73,7 @@ ck_fopen (const char * path, const char * mode)
 {
   FILE * file = fopen (path, mode);
   if (file == NULL) 
-    error ("fopen ");
+    error ("fopen");
   return file;
 }
 
@@ -83,7 +82,7 @@ ck_malloc (size_t size)
 {
   void * ptr = malloc (size);
   if (ptr == NULL) 
-    error ("malloc ");
+    error ("malloc");
   return ptr;
 }
 
@@ -113,11 +112,11 @@ banner ()
 int
 usage ()
 {
-  SAY ("usage: ./dns-discovery domain [options]\n"
+  SAY ("usage: ./dns-discovery <domain> [options]\n"
        "options:\n"
-       "\t-w wordlist file (default : %s)\n"
-       "\t-t threads (default : 1)\n"
-       "\t-r report file\n", DEFAULT_WL);
+       "\t-w <wordlist file> (default : %s)\n"
+       "\t-t <threads> (default : 1)\n"
+       "\t-r <report file>\n", DEFAULT_WL);
   exit (0);
 }
 
@@ -130,7 +129,7 @@ parse_args (int argc, char ** argv)
     usage ();
   dd_args.domain = argv[1];
   dd_args.nthreads = 1;
-  SAY ("DOMAIN : %s\n", dd_args.domain);
+  SAY ("DOMAIN: %s\n", dd_args.domain);
   argc--;
   argv++;
   opterr = 0;
@@ -236,7 +235,7 @@ main (int argc, char ** argv)
  
   for (i = 0; i < dd_args.nthreads; i++) {
     if (pthread_create (&threads[i], NULL, dns_discovery_thread, (void *)wordlist) != 0)
-      error ("pthread ");
+      error ("pthread_create");
   }
   for (i = 0; i < dd_args.nthreads; i++) {
     pthread_join (threads[i], NULL);

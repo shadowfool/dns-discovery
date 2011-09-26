@@ -1,15 +1,15 @@
 Introduction.
 
-The dns-discovery is a multi-threaded dns sub-domain brute-forcer,
-is meant to be used by pen-testers during the enumeration stage.
-Dns-discovery can resolve ipv4 and ipv6 sub-domains, for this, 
+DNS-Discovery is a multi-threaded sub-domain brute-forcer,
+is meant to be used by pen-testers during the initial stages.
+DNS-Discovery can resolve ipv4 and ipv6 sub-domains, for this, 
 its uses a word-list provided by the user.
 This was tested in GNU/Linux 2.6.38 and FreeBSD 8.1-STABLE.
 Its similar to others tools, like dnsmap, but this is multi-threaded.
 
 Download
 
-http://code.google.com/p/dns-discovery/
+http://dns-discovery.googlecode.com
 
 
 Compiling
@@ -19,11 +19,11 @@ $ gcc -o dns-discovery dns-discovery.c -lpthread -O3
 
 Usage
 
-usage: ./dns-discovery domain [options]
+usage: ./dns-discovery <domain> [options]
 options:
-	-w wordlist file (default : wordlist.wl)
-	-t threads (default : 1)
-	-r report file
+	-w <wordlist file> (default : wordlist.wl)
+	-t <threads> (default : 1)
+	-r <report file>
 
 ex:
 $ ./dns-discovery google.com -w wordlist -t 5 -r reportfile
@@ -54,13 +54,13 @@ IPv6 address: 2001:4860:b009::68
 Similar tools
 
 dnsmap
-http://code.google.com/p/dnsmap/
+http://dnsmap.googlecode.com/
 
 fierce
 http://ha.ckers.org/fierce/
 
 dnsenum
-http://dnsenum.googlecode.com/files/dnsenum1.2.tar.gz
+http://dnsenum.googlecode.com/
 
 
 Feedback

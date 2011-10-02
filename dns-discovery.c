@@ -1,6 +1,6 @@
 /*
 DNS Discovery
-  A multi-threaded dns sub-domain brute-forcer
+  A multithreaded subdomain bruteforcer
 
 googlecode : http://dns-discovery.googlecode.com
 
@@ -10,40 +10,17 @@ email	   : m0nad /at/ email.com
 github	   : https://github.com/m0nad/
 copyfree   : beer license, if you like this, buy me a beer
 	
-$ gcc -o dns-discovery dns-discovery.c -Wall -Wextra -lpthread -O3
-$ ./dns-discovery google.com -w wordlist -t 5 -r reportfile
-   ___  _  ______    ___  _                              
-  / _ \/ |/ / __/___/ _ \(_)__ _______ _  _____ ______ __
- / // /    /\ \/___/ // / (_-</ __/ _ \ |/ / -_) __/ // /
-/____/_/|_/___/   /____/_/___/\__/\___/___/\__/_/  \_, / 
-                                                  /___/  
-	  by m0nad /at/ email.com
-
-DOMAIN : google.com
-WORDLIST: wordlist
-THREADS: 5
-REPORT: reportfile
-
-accounts.google.com
-IPv4 address: 209.85.195.84
-
-ads.google.com
-IPv4 address: 72.14.204.112
-
-ipv6.google.com
-IPv6 address: 2001:4860:b009::68
-
-...
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <getopt.h>
 #include <unistd.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <pthread.h>
-#include <string.h>
 
 #define LEN 256
 #define MAX 512
@@ -106,7 +83,7 @@ banner ()
        " / // /    /\\ \\/___/ // / (_-</ __/ _ \\ |/ / -_) __/ // /\n"
        "/____/_/|_/___/   /____/_/___/\\__/\\___/___/\\__/_/  \\_, / \n"
        "                                                  /___/  \n"
-       "\t  by m0nad /at/ email.com\n\n");
+       "\tby m0nad\n\n");
 }
 
 int
@@ -124,7 +101,7 @@ FILE *
 parse_args (int argc, char ** argv)
 {
   FILE * wordlist = NULL;
-  char c; 
+  char c, * ptr_wl = DEFAULT_WL; 
   if (argc < 2) 
     usage ();
   dd_args.domain = argv[1];
@@ -136,8 +113,7 @@ parse_args (int argc, char ** argv)
   while ((c = getopt (argc, argv, "r:w:t:")) != -1)
     switch (c) {
       case 'w':
-	SAY ("WORDLIST: %s\n", optarg); 
-	wordlist = ck_fopen (optarg, "r");
+        ptr_wl = optarg;
         break;
       case 't':
         SAY ("THREADS: %s\n", optarg);
@@ -155,11 +131,10 @@ parse_args (int argc, char ** argv)
       default:
         usage ();
     }
-  if (!wordlist) {
-    wordlist = ck_fopen (DEFAULT_WL, "r"); 
-    SAY ("WORDLIST: %s\n", DEFAULT_WL);
-  }
-  SAY("\n");
+  SAY ("WORDLIST: %s\n", ptr_wl);
+  wordlist = ck_fopen (ptr_wl, "r");
+
+  SAY ("\n");
   return wordlist;
 }
 
@@ -193,7 +168,7 @@ resolve_lookup (const char * hostname)
       inet_ntop (res->ai_family, addr_ptr, addr_str, LEN);
       SAY ("IPv%d address: %s\n", ipv, addr_str);
     }
-    SAY("\n");
+    SAY ("\n");
     pthread_mutex_unlock (&mutexsum);
     freeaddrinfo (ori_res);
   }
@@ -217,7 +192,7 @@ dns_discovery_thread (void * args)
 {
   FILE * wordlist = (FILE *) args;
   dns_discovery (wordlist, dd_args.domain);
-  //pthread_exit ((void *) 0);
+  /*pthread_exit ((void *) 0);*/
   return NULL;	
 }
 
@@ -228,7 +203,7 @@ main (int argc, char ** argv)
   pthread_t * threads;
   FILE * wordlist;
 
-  banner();
+  banner ();
  
   wordlist = parse_args (argc, argv);
   threads = (pthread_t *) ck_malloc (dd_args.nthreads * sizeof (pthread_t)); 
